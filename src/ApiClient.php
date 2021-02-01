@@ -111,7 +111,7 @@ class ApiClient
      *
      * @return PromiseInterface<array|Quote[]>
      */
-    public function getQuotes(array $symbols): array
+    public function getQuotes(array $symbols): PromiseInterface
     {
         return $this->fetchQuotes($symbols);
     }
@@ -122,7 +122,7 @@ class ApiClient
      *
      * @return PromiseInterface<Quote>
      */
-    public function getExchangeRate(string $currency1, string $currency2): ?Quote
+    public function getExchangeRate(string $currency1, string $currency2): PromiseInterface
     {
         return $this->getExchangeRatesAsync([[$currency1, $currency2]])
             ->then(function ($list) {
@@ -137,7 +137,7 @@ class ApiClient
      *
      * @return PromiseInterface<array|Quote[]>
      */
-    public function getExchangeRates(array $currencyPairs): array
+    public function getExchangeRates(array $currencyPairs): PromiseInterface
     {
         $currencySymbols = array_map(function (array $currencies) {
             return implode($currencies).self::CURRENCY_SYMBOL_SUFFIX; // Currency pairs are suffixed with "=X"
