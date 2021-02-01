@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Scheb\YahooFinanceApi;
+namespace Aran\YahooFinanceApi;
 
 interface ValueMapperInterface
 {

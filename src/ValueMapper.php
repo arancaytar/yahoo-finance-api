@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Scheb\YahooFinanceApi;
+namespace Aran\YahooFinanceApi;
 
-use Scheb\YahooFinanceApi\Exception\InvalidValueException;
+use Aran\YahooFinanceApi\Exception\InvalidValueException;
 
 class ValueMapper implements ValueMapperInterface
 {

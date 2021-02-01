@@ -2,15 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Scheb\YahooFinanceApi\Tests;
+namespace Aran\YahooFinanceApi\Tests;
 
 use GuzzleHttp\Exception\TransferException;
 use PHPUnit\Framework\TestCase;
-use Scheb\YahooFinanceApi\ApiClient;
-use Scheb\YahooFinanceApi\ApiClientFactory;
-use Scheb\YahooFinanceApi\Results\HistoricalData;
-use Scheb\YahooFinanceApi\Results\Quote;
-use Scheb\YahooFinanceApi\Results\SearchResult;
+use Aran\YahooFinanceApi\ApiClient;
+use Aran\YahooFinanceApi\ApiClientFactory;
+use Aran\YahooFinanceApi\Results\HistoricalData;
+use Aran\YahooFinanceApi\Results\Quote;
+use Aran\YahooFinanceApi\Results\SearchResult;
+use React\EventLoop\Factory;
 
 class ApiClientIntegrationTest extends TestCase
 {
@@ -28,9 +29,15 @@ class ApiClientIntegrationTest extends TestCase
      */
     private $client;
 
+    /**
+     * @var \React\EventLoop\ExtEventLoop|\React\EventLoop\ExtEvLoop|\React\EventLoop\ExtLibeventLoop|\React\EventLoop\ExtLibevLoop|\React\EventLoop\ExtUvLoop|\React\EventLoop\LoopInterface|\React\EventLoop\StreamSelectLoop
+     */
+    private $loop;
+
     public function setUp(): void
     {
-        $this->client = ApiClientFactory::createApiClient();
+        $this->loop = Factory::create();
+        $this->client = ApiClientFactory::createFromLoop($this->loop);
     }
 
     /**
@@ -38,27 +45,30 @@ class ApiClientIntegrationTest extends TestCase
      */
     public function search_withSearchTerm_returnSearchResults(): void
     {
-        $returnValue = $this->client->search(self::APPLE_NAME);
+        $this->client->search(self::APPLE_NAME)->then(function ($returnValue) {
+            $this->assertIsArray($returnValue);
+            $this->assertContainsOnlyInstancesOf(SearchResult::class, $returnValue);
 
-        $this->assertIsArray($returnValue);
-        $this->assertContainsOnlyInstancesOf(SearchResult::class, $returnValue);
+            $aaplStock = $this->findAAPL($returnValue);
+            $this->assertNotNull($aaplStock, 'Search result must contain AAPL');
 
-        $aaplStock = $this->findAAPL($returnValue);
-        $this->assertNotNull($aaplStock, 'Search result must contain AAPL');
+            $this->assertEquals('Apple Inc.', $aaplStock->getName());
+            $this->assertEquals('S', $aaplStock->getType());
+            $this->assertEquals('NASDAQ', $aaplStock->getExchDisp());
+            $this->assertEquals('Equity', $aaplStock->getTypeDisp());
 
-        $this->assertEquals('Apple Inc.', $aaplStock->getName());
-        $this->assertEquals('S', $aaplStock->getType());
-        $this->assertEquals('NASDAQ', $aaplStock->getExchDisp());
-        $this->assertEquals('Equity', $aaplStock->getTypeDisp());
-
-        // Can be either NAS or NMS
-        $this->assertThat(
-            $aaplStock->getExch(),
-            $this->logicalOr(
-                $this->equalTo('NAS'),
-                $this->equalTo('NMS')
-            )
-        );
+            // Can be either NAS or NMS
+            $this->assertThat(
+                $aaplStock->getExch(),
+                $this->logicalOr(
+                    $this->equalTo('NAS'),
+                    $this->equalTo('NMS')
+                )
+            );
+        })->then(function () {
+            $this->loop->stop();
+        });
+        $this->loop->run();
     }
 
     /**
@@ -81,20 +91,25 @@ class ApiClientIntegrationTest extends TestCase
      */
     public function getHistoricalData_valuesForInterval_returnHistoricalData($interval, \DateTime $startDate, \DateTime $endDate): void
     {
-        $returnValue = $this->client->getHistoricalData(self::APPLE_SYMBOL, $interval, $startDate, $endDate);
+        $this->client->getHistoricalData(self::APPLE_SYMBOL, $interval, $startDate, $endDate)
+            ->then(function ($returnValue) {
+                $this->assertIsArray($returnValue);
+                $this->assertGreaterThan(0, \count($returnValue));
+                $this->assertContainsOnlyInstancesOf(HistoricalData::class, $returnValue);
 
-        $this->assertIsArray($returnValue);
-        $this->assertGreaterThan(0, \count($returnValue));
-        $this->assertContainsOnlyInstancesOf(HistoricalData::class, $returnValue);
-
-        $historicalData = $returnValue[0];
-        $this->assertInstanceOf(\DateTime::class, $historicalData->getDate());
-        $this->assertIsFloat($historicalData->getOpen());
-        $this->assertIsFloat($historicalData->getHigh());
-        $this->assertIsFloat($historicalData->getLow());
-        $this->assertIsFloat($historicalData->getClose());
-        $this->assertIsFloat($historicalData->getAdjClose());
-        $this->assertIsInt($historicalData->getVolume());
+                $historicalData = $returnValue[0];
+                $this->assertInstanceOf(\DateTime::class, $historicalData->getDate());
+                $this->assertIsFloat($historicalData->getOpen());
+                $this->assertIsFloat($historicalData->getHigh());
+                $this->assertIsFloat($historicalData->getLow());
+                $this->assertIsFloat($historicalData->getClose());
+                $this->assertIsFloat($historicalData->getAdjClose());
+                $this->assertIsInt($historicalData->getVolume());
+            })
+            ->then(function () {
+                $this->loop->stop();
+            });
+        $this->loop->run();
     }
 
     /**

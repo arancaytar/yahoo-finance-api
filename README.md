@@ -1,14 +1,14 @@
-scheb/yahoo-finance-api
+aran/yahoo-finance-api
 =======================
 
 **This is a PHP client for Yahoo Finance API.**
 
-[![Build Status](https://github.com/scheb/yahoo-finance-api/workflows/CI/badge.svg?branch=4.x)](https://github.com/scheb/yahoo-finance-api/actions?query=workflow%3ACI+branch%3A4.x)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/scheb/yahoo-finance-api/badges/quality-score.png?b=4.x)](https://scrutinizer-ci.com/g/scheb/yahoo-finance-api/?branch=4.x)
-[![Code Coverage](https://scrutinizer-ci.com/g/scheb/yahoo-finance-api/badges/coverage.png?b=4.x)](https://scrutinizer-ci.com/g/scheb/yahoo-finance-api/?branch=4.x)
-[![Latest Stable Version](https://poser.pugx.org/scheb/yahoo-finance-api/v/stable.svg)](https://packagist.org/packages/scheb/yahoo-finance-api)
-[![Total Downloads](https://poser.pugx.org/scheb/yahoo-finance-api/downloads)](https://packagist.org/packages/scheb/yahoo-finance-api)
-[![License](https://poser.pugx.org/scheb/yahoo-finance-api/license.svg)](https://packagist.org/packages/scheb/yahoo-finance-api)
+Specifically, this is a fork of [scheb/yahoo-finance-api](https://github.com/scheb/yahoo-finance-api)
+that replaces the guzzlehttp/guzzle client with [reactphp/http](https://github.com/reactphp/http)
+and uses asynchronous requests.
+
+This fork is mostly created for personal use and may be abandoned in the future;
+please use https://github.com/scheb/yahoo-finance-api for any long-term projects.
 
 <p align="center"><img alt="Logo" src="doc/logo.svg" width="180" /></p>
 
@@ -21,7 +21,7 @@ Since YQL APIs have been discontinued in November 2017, this client is using non
 Download via Composer:
 
 ```bash
-composer require scheb/yahoo-finance-api
+composer require aran/yahoo-finance-api
 ```
 
 Alternatively you can also add the package directly to composer.json:
@@ -29,7 +29,7 @@ Alternatively you can also add the package directly to composer.json:
 ```json
 {
     "require": {
-        "scheb/yahoo-finance-api": "^4.0"
+        "aran/yahoo-finance-api": "^5.0"
     }
 }
 ```
@@ -37,64 +37,58 @@ Alternatively you can also add the package directly to composer.json:
 and then tell Composer to install the package:
 
 ```bash
-composer update scheb/yahoo-finance-api
+composer update aran/yahoo-finance-api
 ```
 
 ## Usage
 
 ```php
-use Scheb\YahooFinanceApi\ApiClient;
-use Scheb\YahooFinanceApi\ApiClientFactory;
-use GuzzleHttp\Client;
+use Aran\YahooFinanceApi\ApiClient;
+use Aran\YahooFinanceApi\ApiClientFactory;
+use Aran\YahooFinanceApi\Results\Quote;use React\Http\Browser;
 
 // Create a new client from the factory
-$client = ApiClientFactory::createApiClient();
+$eventLoop = \React\EventLoop\Factory::create();
+$client = ApiClientFactory::createFromLoop($eventLoop);
 
-// Or use your own Guzzle client and pass it in
-$options = [/*...*/];
-$guzzleClient = new Client($options);
-$client = ApiClientFactory::createApiClient($guzzleClient);
+// Or use your own Browser and pass it in
+$browser = new Browser($eventLoop);
+$client = ApiClientFactory::createFromBrowser($browser);
 
 // Returns an array of Scheb\YahooFinanceApi\Results\SearchResult
-$searchResult = $client->search("Apple");
+$client->search("Apple")->then(function (array $searchResult) {
+
+});
 
 // Returns an array of Scheb\YahooFinanceApi\Results\HistoricalData
-$historicalData = $client->getHistoricalData("AAPL", ApiClient::INTERVAL_1_DAY, new \DateTime("-14 days"), new \DateTime("today"));
+$client->getHistoricalData("AAPL", ApiClient::INTERVAL_1_DAY, new \DateTime("-14 days"), new \DateTime("today"))
+    ->then(function (array $historicalData) {
+
+    });
 
 // Returns Scheb\YahooFinanceApi\Results\Quote
-$exchangeRate = $client->getExchangeRate("USD", "EUR");
+$client->getExchangeRate("USD", "EUR")->then(function (Quote $exchangeRate) {
+
+});
 
 // Returns an array of Scheb\YahooFinanceApi\Results\Quote
-$exchangeRates = $client->getExchangeRates([
+$client->getExchangeRates([
     ["USD", "EUR"],
     ["EUR", "USD"],
-]);
+])->then(function (array $exchangeRates) {
+
+});
 
 // Returns Scheb\YahooFinanceApi\Results\Quote
-$quote = $client->getQuote("AAPL");
+$client->getQuote("AAPL")->then(function (Quote $quote) {
+
+});
 
 // Returns an array of Scheb\YahooFinanceApi\Results\Quote
-$quotes = $client->getQuotes(["AAPL", "GOOG"]);
+$client->getQuotes(["AAPL", "GOOG"])->then(function (array $quotes) {
+
+});
 ```
-
-Version Guidance
-----------------
-
-| Version        | Status     | PHP Version |
-|----------------|------------|-------------|
-| [1.x][v1-repo] | EOL        |>= 5.3.0     |
-| [2.x][v2-repo] | EOL        |>= 5.6.0     |
-| [3.x][v3-repo] | EOL        |>= 5.6.0     |
-| [4.x][v4-repo] | Maintained |>= 7.1.3     |
-
-[v1-repo]: https://github.com/scheb/yahoo-finance-api/tree/1.x
-[v2-repo]: https://github.com/scheb/yahoo-finance-api/tree/2.x
-[v3-repo]: https://github.com/scheb/yahoo-finance-api/tree/3.x
-[v4-repo]: https://github.com/scheb/yahoo-finance-api/tree/4.x
-
-Contributing
-------------
-Want to contribute to this project? See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 License
 -------

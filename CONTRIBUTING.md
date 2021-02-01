@@ -10,7 +10,7 @@ When creating the bug report, please follow the bug template and provide details
 Creating a Pull Request
 -----------------------
 
-You're welcome to [contribute](https://github.com/scheb/yahoo-finance-api/graphs/contributors) new features by creating
+You're welcome to [contribute](https://github.com/arancaytar/yahoo-finance-api/graphs/contributors) new features by creating
 a pull requests or feature request in the issues section.
 
 For pull requests, please follow these guidelines:

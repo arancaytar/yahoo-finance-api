@@ -2,18 +2,25 @@
 
 declare(strict_types=1);
 
-namespace Scheb\YahooFinanceApi;
+namespace Aran\YahooFinanceApi;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
+use React\EventLoop\Factory;
+use React\EventLoop\LoopInterface;
+use React\Http\Browser;
 
 class ApiClientFactory
 {
-    public static function createApiClient(ClientInterface $guzzleClient = null): ApiClient
+    public static function createFromBrowser(Browser $client): ApiClient
     {
-        $guzzleClient = $guzzleClient ? $guzzleClient : new Client();
         $resultDecoder = new ResultDecoder(new ValueMapper());
 
-        return new ApiClient($guzzleClient, $resultDecoder);
+        return new ApiClient($client, $resultDecoder);
+    }
+
+    public static function createFromLoop(LoopInterface $loop): ApiClient
+    {
+        return static::createFromBrowser(new Browser($loop));
     }
 }

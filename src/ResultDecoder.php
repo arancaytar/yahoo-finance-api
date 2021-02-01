@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Scheb\YahooFinanceApi;
+namespace Aran\YahooFinanceApi;
 
-use Scheb\YahooFinanceApi\Exception\ApiException;
-use Scheb\YahooFinanceApi\Exception\InvalidValueException;
-use Scheb\YahooFinanceApi\Results\HistoricalData;
-use Scheb\YahooFinanceApi\Results\Quote;
-use Scheb\YahooFinanceApi\Results\SearchResult;
+use Aran\YahooFinanceApi\Exception\ApiException;
+use Aran\YahooFinanceApi\Exception\InvalidValueException;
+use Aran\YahooFinanceApi\Results\HistoricalData;
+use Aran\YahooFinanceApi\Results\Quote;
+use Aran\YahooFinanceApi\Results\SearchResult;
 
 class ResultDecoder
 {

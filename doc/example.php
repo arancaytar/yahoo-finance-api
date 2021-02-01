@@ -3,8 +3,8 @@
 require __DIR__.'/../vendor/autoload.php';
 
 use GuzzleHttp\Client;
-use Scheb\YahooFinanceApi\ApiClient;
-use Scheb\YahooFinanceApi\ApiClientFactory;
+use Aran\YahooFinanceApi\ApiClient;
+use Aran\YahooFinanceApi\ApiClientFactory;
 
 // Create a new client from the factory
 $client = ApiClientFactory::createApiClient();

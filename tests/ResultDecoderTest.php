@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Scheb\YahooFinanceApi\Tests;
+namespace Aran\YahooFinanceApi\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Scheb\YahooFinanceApi\Exception\ApiException;
-use Scheb\YahooFinanceApi\ResultDecoder;
-use Scheb\YahooFinanceApi\Results\HistoricalData;
-use Scheb\YahooFinanceApi\Results\Quote;
-use Scheb\YahooFinanceApi\Results\SearchResult;
-use Scheb\YahooFinanceApi\ValueMapper;
+use Aran\YahooFinanceApi\Exception\ApiException;
+use Aran\YahooFinanceApi\ResultDecoder;
+use Aran\YahooFinanceApi\Results\HistoricalData;
+use Aran\YahooFinanceApi\Results\Quote;
+use Aran\YahooFinanceApi\Results\SearchResult;
+use Aran\YahooFinanceApi\ValueMapper;
 
 class ResultDecoderTest extends TestCase
 {
