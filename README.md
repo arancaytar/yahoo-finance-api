@@ -18,18 +18,18 @@ Since YQL APIs have been discontinued in November 2017, this client is using non
 
 ## Installation
 
-Download via Composer:
-
-```bash
-composer require aran/yahoo-finance-api
-```
-
-Alternatively you can also add the package directly to composer.json:
+This fork is not published and must be required via a vcs repository:
 
 ```json
 {
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/arancaytar/yahoo-finance-api"
+        }
+    ],
     "require": {
-        "aran/yahoo-finance-api": "^5.0"
+        "aran/yahoo-finance-api": "^4.0"
     }
 }
 ```
