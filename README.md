@@ -29,7 +29,7 @@ This fork is not published and must be required via a vcs repository:
         }
     ],
     "require": {
-        "aran/yahoo-finance-api": "^4.0"
+        "aran/yahoo-finance-api": "4.x-dev"
     }
 }
 ```
